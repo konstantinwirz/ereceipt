@@ -1,0 +1,49 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.commercehub.gradle.plugin:gradle-avro-plugin:0.16.0"
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'application'
+apply plugin: "com.commercehub.gradle.plugin.avro"
+
+group 'api'
+version '0.0.1'
+mainClassName = "io.ktor.server.netty.EngineMain"
+
+
+repositories {
+    mavenLocal()
+    jcenter()
+    maven { url 'https://kotlin.bintray.com/ktor' }
+    maven { url 'http://packages.confluent.io/maven/' }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "io.ktor:ktor-server-netty:$ktor_version"
+    compile "ch.qos.logback:logback-classic:$logback_version"
+    compile "io.ktor:ktor-server-core:$ktor_version"
+    compile "io.ktor:ktor-jackson:$ktor_version"
+    compile 'joda-time:joda-time:2.9.4'
+    compile group: 'org.apache.avro', name: 'avro', version: '1.8.2'
+    compile group: 'org.apache.kafka', name: 'kafka-clients', version: '2.1.0'
+    compile "io.confluent:kafka-avro-serializer:5.1.0"
+
+
+    testCompile "io.ktor:ktor-server-tests:$ktor_version"
+}
+
+
+avro {
+    createSetters = false
+    fieldVisibility = "PRIVATE"
+    outputCharacterEncoding = "UTF-8"
+    validateDefaults = true
+}

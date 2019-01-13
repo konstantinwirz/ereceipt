@@ -1,0 +1,82 @@
+{
+  "namespace": "com.mms.ereceipt.avro",
+  "type": "record",
+  "name": "InvoiceRequestedEvent",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "country",
+      "type": "string"
+    },
+    {
+      "name": "amount",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 6,
+        "scale": 2
+      }
+    },
+    {
+      "name": "currency",
+      "type": "string"
+    },
+    {
+      "name": "affiliate",
+      "type": {
+        "type": "record",
+        "name": "Affiliate",
+        "fields": [
+          {
+            "name": "keyIndex",
+            "type": "long"
+          },
+          {
+            "name": "algo",
+            "type": "string"
+          },
+          {
+            "name": "payload",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "lines",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "InvoiceLine",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string"
+            },
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "price",
+              "type": {
+                "type": "bytes",
+                "logicalType": "decimal",
+                "precision": 6,
+                "scale": 2
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
