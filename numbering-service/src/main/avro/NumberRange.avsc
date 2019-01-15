@@ -1,12 +1,8 @@
 {
   "namespace": "com.mms.ereceipt.avro",
   "type": "record",
-  "name": "FiscalNumberGeneratedEvent",
+  "name": "NumberRange",
   "fields": [
-    {
-      "name": "fiscalNumber",
-      "type": "string"
-    },
     {
       "name": "country",
       "type": "string"
@@ -16,12 +12,12 @@
       "type": "string"
     },
     {
-      "name": "virtualDevice",
-      "type": "string"
-    },
-    {
       "name": "counter",
       "type": "long"
+    },
+    {
+      "name": "year",
+      "type": "int"
     }
   ]
 }
