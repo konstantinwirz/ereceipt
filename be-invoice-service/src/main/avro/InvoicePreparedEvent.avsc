@@ -16,6 +16,10 @@
       "type": "string"
     },
     {
+      "name": "outletId",
+      "type": "string"
+    },
+    {
       "name": "amount",
       "type": {
         "type": "bytes",

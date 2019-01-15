@@ -14,9 +14,7 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.post
 import io.ktor.routing.routing
-import org.apache.kafka.clients.producer.Callback
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.clients.producer.RecordMetadata
 import org.slf4j.event.Level
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -47,8 +45,8 @@ fun Application.module(@Suppress("UNUSED_PARAMETER") testing: Boolean = false) {
                     val producer = createProducer()
                     val record = ProducerRecord("ereceipt-invoice-requested-events", event.country, event)
                     producer.send(record) { metadata, e ->
-                            if (e != null) log.error("failed to send message: {}", e.message)
-                            else log.error("sent message: {}", metadata)
+                        if (e != null) log.error("failed to send message: {}", e.message)
+                        else log.info("sent message: {}", metadata)
                     }
 
                     call.respond(mapOf("id" to enrichedRequest.id))

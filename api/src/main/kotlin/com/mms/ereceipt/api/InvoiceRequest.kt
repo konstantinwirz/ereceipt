@@ -23,6 +23,7 @@ data class InvoiceRequest(
     val amount: BigDecimal,
     val currency: String,
     val country: String,
+    val outletId: String,
     val affiliate: Affiliate,
     val lines: List<InvoiceLine> = emptyList()
 )
@@ -47,6 +48,7 @@ fun InvoiceRequest.toAvro(): InvoiceRequestedEvent =
             .setId(this.id)
             .setType(this.type)
             .setAmount(this.amount)
+            .setOutletId(this.outletId)
             .setCurrency(this.currency)
             .setCountry(this.country)
             .setLines(this.lines.map(InvoiceLine::toAvro))

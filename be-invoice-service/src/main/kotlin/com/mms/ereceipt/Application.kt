@@ -48,6 +48,7 @@ object Application {
                 .setAmount(event.amount)
                 .setCurrency(event.currency)
                 .setCountry(event.country)
+                .setOutletId(event.outletId)
                 .setAffiliate(
                     Affiliate.newBuilder().setKeyIndex(event.affiliate.keyIndex).setAlgo(event.affiliate.algo).setPayload(
                         event.affiliate.payload
