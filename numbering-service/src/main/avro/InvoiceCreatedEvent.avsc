@@ -1,7 +1,7 @@
 {
   "namespace": "com.mms.ereceipt.avro",
   "type": "record",
-  "name": "InvoicePreparedEvent",
+  "name": "InvoiceCreatedEvent",
   "fields": [
     {
       "name": "id",
@@ -9,6 +9,10 @@
     },
     {
       "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "fiscalNumber",
       "type": "string"
     },
     {
