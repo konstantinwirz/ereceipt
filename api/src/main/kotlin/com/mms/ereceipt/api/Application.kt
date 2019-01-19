@@ -22,6 +22,8 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(@Suppress("UNUSED_PARAMETER") testing: Boolean = false) {
 
+    val producer = createProducer()
+
 
     install(CallLogging) {
         level = Level.INFO
@@ -42,7 +44,6 @@ fun Application.module(@Suppress("UNUSED_PARAMETER") testing: Boolean = false) {
                 if (errors.isEmpty()) {
                     val event = enrichedRequest.toAvro()
                     log.info("event = {}", event)
-                    val producer = createProducer()
                     val record = ProducerRecord("ereceipt-invoice-requested-events", event.country, event)
                     producer.send(record) { metadata, e ->
                         if (e != null) log.error("failed to send message: {}", e.message)
