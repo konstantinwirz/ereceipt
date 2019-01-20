@@ -85,8 +85,9 @@ object Application {
         props[AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
         props[StreamsConfig.APPLICATION_ID_CONFIG] = applicationId
         props[ConsumerConfig.GROUP_ID_CONFIG] = groupId
+        props[StreamsConfig.PROCESSING_GUARANTEE_CONFIG] = StreamsConfig.EXACTLY_ONCE
 
-        val topology = streamBuilder.build(props)
+        val topology = streamBuilder.build()
         val streams = KafkaStreams(topology, props)
         streams.start()
     }
@@ -122,7 +123,8 @@ class NumberRangeTransformer : ValueTransformer<InvoicePreparedEvent, InvoiceCre
     @Suppress("UNCHECKED_CAST")
     override fun init(context: ProcessorContext?) {
         this.context = context
-        this.numberRangeStore = this.context!!.getStateStore(NUMBER_RANGE_STORE_NAME) as KeyValueStore<String, NumberRange>
+        this.numberRangeStore =
+                this.context!!.getStateStore(NUMBER_RANGE_STORE_NAME) as KeyValueStore<String, NumberRange>
     }
 
     override fun transform(value: InvoicePreparedEvent?): InvoiceCreatedEvent {

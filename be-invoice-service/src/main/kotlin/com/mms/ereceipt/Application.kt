@@ -7,6 +7,7 @@ import com.typesafe.config.ConfigFactory
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
@@ -76,6 +77,7 @@ object Application {
         props[AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
         props[StreamsConfig.APPLICATION_ID_CONFIG] = applicationId
         props[ConsumerConfig.GROUP_ID_CONFIG] = groupId
+        props[StreamsConfig.PROCESSING_GUARANTEE_CONFIG] = StreamsConfig.EXACTLY_ONCE
 
         val topology = streamBuilder.build(props)
         val streams = KafkaStreams(topology, props)

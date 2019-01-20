@@ -46,11 +46,11 @@ object Application {
 
         val props = Properties()
         props[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
-        props[AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
+        //props[AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
         props[StreamsConfig.APPLICATION_ID_CONFIG] = applicationId
         props[ConsumerConfig.GROUP_ID_CONFIG] = groupId
 
-        val topology = streamBuilder.build(props)
+        val topology = streamBuilder.build()
         val streams = KafkaStreams(topology, props)
         streams.start()
     }
