@@ -12,7 +12,7 @@ import org.apache.kafka.common.serialization.StringSerializer
 import java.util.*
 
 
-fun createProducer(): Producer<String, InvoiceRequestedEvent> {
+fun createProducer(): Producer<Int, InvoiceRequestedEvent> {
     val config = HoconApplicationConfig(ConfigFactory.load()).config("kafka")
     val properties = Properties()
     properties[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = config.property("bootstrap.servers").getString()
@@ -23,5 +23,5 @@ fun createProducer(): Producer<String, InvoiceRequestedEvent> {
     properties[ProducerConfig.RETRIES_CONFIG] = "1"
     properties[ProducerConfig.ACKS_CONFIG] = "all"
 
-    return KafkaProducer<String, InvoiceRequestedEvent>(properties)
+    return KafkaProducer<Int, InvoiceRequestedEvent>(properties)
 }

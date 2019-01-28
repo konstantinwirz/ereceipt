@@ -44,7 +44,8 @@ fun Application.module(@Suppress("UNUSED_PARAMETER") testing: Boolean = false) {
                 if (errors.isEmpty()) {
                     val event = enrichedRequest.toAvro()
                     log.info("event = {}", event)
-                    val record = ProducerRecord("ereceipt-invoice-requested-events", event.country, event)
+                    val record =
+                        ProducerRecord("document-requested-events", event.outletId, event)
                     producer.send(record) { metadata, e ->
                         if (e != null) log.error("failed to send message: {}", e.message)
                         else log.info("sent message: {}", metadata)

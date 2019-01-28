@@ -23,7 +23,7 @@ data class InvoiceRequest(
     val amount: BigDecimal,
     val currency: String,
     val country: String,
-    val outletId: String,
+    val outletId: Int,
     val affiliate: Affiliate,
     val lines: List<InvoiceLine> = emptyList()
 )
