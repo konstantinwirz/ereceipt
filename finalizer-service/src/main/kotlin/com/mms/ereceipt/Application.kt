@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 import java.util.*
 
 
-const val INPUT_TOPIC = "ereceipt-invoice-created-events"
+const val inputTopic = "document-created-events"
 
 
 object Application {
@@ -38,7 +38,7 @@ object Application {
         val streamBuilder = StreamsBuilder()
 
         streamBuilder
-            .stream<String, InvoiceCreatedEvent>(INPUT_TOPIC, Consumed.with(Serdes.String(), inputEventSerde))
+            .stream<String, InvoiceCreatedEvent>(inputTopic, Consumed.with(Serdes.String(), inputEventSerde))
             .foreach { country, event ->
                 LOG.info("received: {}", event)
             }

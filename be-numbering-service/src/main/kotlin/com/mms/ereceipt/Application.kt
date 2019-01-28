@@ -21,10 +21,10 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
 
-const val INPUT_TOPIC = "ereceipt-invoice-prepared-events"
-const val OUTPUT_TOPIC = "ereceipt-invoice-created-events"
-const val NUMBER_RANGE_STORE_NAME = "number-range-store"
-
+const val INPUT_TOPIC = "document-prepared-events-be"
+const val OUTPUT_TOPIC = "document-created-events"
+const val NUMBER_RANGE_EVEN_STORE_NAME = "be-number-range-even-store"
+const val NUMBER_RANGE_ODD_STORE_NAME = "be-number-range-odd-store"
 
 object Application {
 
@@ -61,12 +61,22 @@ object Application {
 
         val streamBuilder = StreamsBuilder()
 
-        val storeSupplier = Stores.persistentKeyValueStore(NUMBER_RANGE_STORE_NAME)
-        val storeBuilder = Stores.keyValueStoreBuilder(
-            storeSupplier, Serdes.String(), numberRangeSerde
-        )
+        //val storeSupplier = Stores.persistentKeyValueStore(NUMBER_RANGE_EVEN_STORE_NAME)
 
-        streamBuilder.addStateStore(storeBuilder)
+
+        val storeSupplier = { storeName: String -> Stores.persistentKeyValueStore(storeName) }
+        val storeBuilder = { storeName: String ->
+            Stores.keyValueStoreBuilder(
+                storeSupplier(storeName), Serdes.Integer(), numberRangeSerde
+            )
+        }
+
+
+        listOf(
+            NUMBER_RANGE_EVEN_STORE_NAME,
+            NUMBER_RANGE_ODD_STORE_NAME
+        ).forEach { streamBuilder.addStateStore(storeBuilder(it)) }
+
 
         val inputEventStream = streamBuilder.stream<String, InvoicePreparedEvent>(
             INPUT_TOPIC,
@@ -75,7 +85,7 @@ object Application {
 
         val outputEventStream = inputEventStream.transformValues(
             fun(): NumberRangeTransformer = NumberRangeTransformer(),
-            arrayOf(NUMBER_RANGE_STORE_NAME)
+            arrayOf(NUMBER_RANGE_EVEN_STORE_NAME)
         )
 
         outputEventStream.to(OUTPUT_TOPIC, Produced.with(Serdes.String(), outputEventSerde))
@@ -95,7 +105,7 @@ object Application {
 }
 
 
-fun NumberRange(country: String, outletId: String) =
+fun NumberRange(country: String, outletId: Int) =
     NumberRange.newBuilder()
         .setCountry(country)
         .setOutletId(outletId)
@@ -114,44 +124,51 @@ fun NumberRange.inc() =
 class NumberRangeTransformer : ValueTransformer<InvoicePreparedEvent, InvoiceCreatedEvent> {
 
     companion object {
-        val LOG = LoggerFactory.getLogger(NumberRangeTransformer.javaClass)
+        val LOG = LoggerFactory.getLogger(NumberRangeTransformer::class.java)
     }
 
     var context: ProcessorContext? = null
-    private var numberRangeStore: KeyValueStore<String, NumberRange>? = null
+    private var numberRangeEvenStore: KeyValueStore<Int, NumberRange>? = null
+    private var numberRangeOddStore: KeyValueStore<Int, NumberRange>? = null
 
     @Suppress("UNCHECKED_CAST")
     override fun init(context: ProcessorContext?) {
         this.context = context
-        this.numberRangeStore =
-                this.context!!.getStateStore(NUMBER_RANGE_STORE_NAME) as KeyValueStore<String, NumberRange>
+        this.numberRangeEvenStore =
+            this.context!!.getStateStore(NUMBER_RANGE_EVEN_STORE_NAME) as KeyValueStore<Int, NumberRange>
+        this.numberRangeOddStore =
+            this.context!!.getStateStore(NUMBER_RANGE_ODD_STORE_NAME) as KeyValueStore<Int, NumberRange>
     }
 
-    override fun transform(value: InvoicePreparedEvent?): InvoiceCreatedEvent {
-        LOG.info("received event: {}", value)
+    override fun transform(event: InvoicePreparedEvent?): InvoiceCreatedEvent {
+        LOG.info("received event: {}", event)
 
-        val outletId = value!!.outletId
-        val country = value.country
-        // get current counter value
-        val numberRange = this.numberRangeStore!!.get(outletId) ?: NumberRange(country, outletId)
+        val outletId = event!!.outletId
+        val country = event.country
+        // get current counter event
+        val numberRange = this.getStore(outletId).get(outletId) ?: NumberRange(country, outletId)
 
         val incremented = numberRange.inc()
 
-        numberRangeStore!!.put(outletId, incremented)
+        numberRangeEvenStore!!.put(outletId, incremented)
 
         LOG.info("using number range: {}", numberRange)
 
         return InvoiceCreatedEvent.newBuilder()
-            .setCurrency(value.currency)
-            .setAmount(value.amount)
-            .setOutletId(value.outletId)
-            .setCountry(value.country)
-            .setType(value.type)
-            .setLines(value.lines)
+            .setCurrency(event.currency)
+            .setAmount(event.amount)
+            .setOutletId(event.outletId)
+            .setCountry(event.country)
+            .setType(event.type)
+            .setLines(event.lines)
             .setFiscalNumber("A0000000" + incremented.counter)
-            .setId(value.id)
-            .setAffiliate(value.affiliate)
+            .setId(event.id)
+            .setAffiliate(event.affiliate)
             .build()
+    }
+
+    private fun getStore(outletId: Int): KeyValueStore<Int, NumberRange> {
+        return if (outletId.rem(2) == 0) this.numberRangeEvenStore!! else this.numberRangeOddStore!!
     }
 
     override fun close() {

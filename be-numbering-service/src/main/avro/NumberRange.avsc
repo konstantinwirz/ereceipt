@@ -9,7 +9,7 @@
     },
     {
       "name": "outletId",
-      "type": "string"
+      "type": "int"
     },
     {
       "name": "counter",
