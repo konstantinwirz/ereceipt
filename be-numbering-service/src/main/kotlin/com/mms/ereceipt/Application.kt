@@ -78,17 +78,17 @@ object Application {
         ).forEach { streamBuilder.addStateStore(storeBuilder(it)) }
 
 
-        val inputEventStream = streamBuilder.stream<String, InvoicePreparedEvent>(
+        val inputEventStream = streamBuilder.stream<Int, InvoicePreparedEvent>(
             INPUT_TOPIC,
-            Consumed.with(Serdes.String(), inputEventSerde)
+            Consumed.with(Serdes.Integer(), inputEventSerde)
         )
 
         val outputEventStream = inputEventStream.transformValues(
             fun(): NumberRangeTransformer = NumberRangeTransformer(),
-            arrayOf(NUMBER_RANGE_EVEN_STORE_NAME)
+            arrayOf(NUMBER_RANGE_EVEN_STORE_NAME, NUMBER_RANGE_ODD_STORE_NAME)
         )
 
-        outputEventStream.to(OUTPUT_TOPIC, Produced.with(Serdes.String(), outputEventSerde))
+        outputEventStream.to(OUTPUT_TOPIC, Produced.with(Serdes.Integer(), outputEventSerde))
 
         val props = Properties()
         props[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
@@ -146,11 +146,13 @@ class NumberRangeTransformer : ValueTransformer<InvoicePreparedEvent, InvoiceCre
         val outletId = event!!.outletId
         val country = event.country
         // get current counter event
-        val numberRange = this.getStore(outletId).get(outletId) ?: NumberRange(country, outletId)
+        val store = this.getStore(outletId)
+        val numberRange = store.get(outletId) ?: NumberRange(country, outletId)
 
         val incremented = numberRange.inc()
 
-        numberRangeEvenStore!!.put(outletId, incremented)
+
+        store.put(outletId, incremented)
 
         LOG.info("using number range: {}", numberRange)
 

@@ -16,6 +16,7 @@ import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.kstream.Consumed
 import org.apache.kafka.streams.kstream.Produced
+import java.nio.ByteBuffer
 import java.util.*
 
 object Application {
@@ -115,10 +116,7 @@ class OutletPartitioner : Partitioner {
         valueBytes: ByteArray,
         cluster: Cluster
     ): Int {
-        val outletId = (keyBytes[0].toInt() shl 24) and 0xff000000.toInt() or
-                        (keyBytes[1].toInt() shl 16) and 0x00ff0000 or
-                        (keyBytes[2].toInt() shl 8) and 0x0000ff00 or
-                        (keyBytes[3].toInt() shl 0) and 0x000000ff
+        val outletId = ByteBuffer.wrap(keyBytes).int
         return if (outletId.rem(2) == 0) 0 else 1
 
     }
