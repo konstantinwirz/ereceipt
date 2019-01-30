@@ -18,6 +18,7 @@ import org.apache.kafka.streams.processor.ProcessorContext
 import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.Stores
 import org.slf4j.LoggerFactory
+import java.lang.RuntimeException
 import java.time.LocalDate
 import java.util.*
 
@@ -138,12 +139,19 @@ class NumberRangeTransformer : ValueTransformer<InvoicePreparedEvent, InvoiceCre
 
         val outletId = event!!.outletId
         val country = event.country
+
+        randomizedThrow()
+
         // get current counter event
         val numberRange = this.numberRangeStore!!.get(outletId) ?: NumberRange(country, outletId)
 
         val incremented = numberRange.inc()
 
+        randomizedThrow()
+
         this.numberRangeStore!!.put(outletId, incremented)
+
+        randomizedThrow()
 
         LOG.info("using number range: {}", numberRange)
 
@@ -167,3 +175,8 @@ class NumberRangeTransformer : ValueTransformer<InvoicePreparedEvent, InvoiceCre
 
 }
 
+
+
+fun randomizedThrow() {
+    if (Random().nextInt(50) == 7) throw RuntimeException("thrown randomized exception")
+}
