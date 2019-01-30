@@ -1,0 +1,23 @@
+{
+  "namespace": "com.mms.ereceipt.avro",
+  "type": "record",
+  "name": "NumberRange",
+  "fields": [
+    {
+      "name": "country",
+      "type": "string"
+    },
+    {
+      "name": "outletId",
+      "type": "int"
+    },
+    {
+      "name": "counter",
+      "type": "long"
+    },
+    {
+      "name": "year",
+      "type": "int"
+    }
+  ]
+}

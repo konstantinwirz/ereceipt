@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
 
-const val INPUT_TOPIC = "document-prepared-events-be"
+const val INPUT_TOPIC = "document-prepared-events-es"
 const val OUTPUT_TOPIC = "document-created-events"
 const val NUMBER_RANGE_STORE_NAME = "number-range-store"
 
@@ -154,7 +154,7 @@ class NumberRangeTransformer : ValueTransformer<InvoicePreparedEvent, InvoiceCre
             .setCountry(event.country)
             .setType(event.type)
             .setLines(event.lines)
-            .setFiscalNumber("BE-" + incremented.counter)
+            .setFiscalNumber("ES-" + incremented.counter)
             .setId(event.id)
             .setAffiliate(event.affiliate)
             .build()
