@@ -22,14 +22,14 @@ import java.util.*
 object Application {
 
 
-    val inputTopic = "document-requested-events"
+    private const val inputTopic = "document-requested-events"
 
-    val outputTopics = mapOf(
+    private val outputTopics = mapOf(
         "ES" to "document-prepared-events-es",
         "BE" to "document-prepared-events-be"
     )
 
-    val outputTopicUnknown = "document-prepared-events-unknown"
+    private const val outputTopicUnknown = "document-prepared-events-unknown"
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -66,7 +66,7 @@ object Application {
                 .setAmount(event.amount)
                 .setCurrency(event.currency)
                 .setCountry(event.country)
-                .setOutletId(event.outletId)
+                .setOutletId(outletId)
                 .setAffiliate(
                     Affiliate.newBuilder().setKeyIndex(event.affiliate.keyIndex).setAlgo(event.affiliate.algo).setPayload(
                         event.affiliate.payload
@@ -77,7 +77,7 @@ object Application {
         }
 
         mapValues.to(
-            { key, event, recordContext ->
+            { _, event, _ ->
                 outputTopics.getOrDefault(event.country, outputTopicUnknown)
             },
             Produced.with(Serdes.Integer(), invoicePreparedSerde)

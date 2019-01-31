@@ -89,7 +89,6 @@ object Application {
 
         val props = Properties()
         props[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
-        props[AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
         props[StreamsConfig.APPLICATION_ID_CONFIG] = applicationId
         props[ConsumerConfig.GROUP_ID_CONFIG] = groupId
         props[StreamsConfig.PROCESSING_GUARANTEE_CONFIG] = StreamsConfig.EXACTLY_ONCE
@@ -140,14 +139,10 @@ class NumberRangeTransformer : ValueTransformer<InvoicePreparedEvent, InvoiceCre
         val outletId = event!!.outletId
         val country = event.country
 
-        randomizedThrow()
-
         // get current counter event
         val numberRange = this.numberRangeStore!!.get(outletId) ?: NumberRange(country, outletId)
 
         val incremented = numberRange.inc()
-
-        randomizedThrow()
 
         this.numberRangeStore!!.put(outletId, incremented)
 
@@ -178,5 +173,5 @@ class NumberRangeTransformer : ValueTransformer<InvoicePreparedEvent, InvoiceCre
 
 
 fun randomizedThrow() {
-    if (Random().nextInt(50) == 7) throw RuntimeException("thrown randomized exception")
+    if (Random().nextInt(10000) == 44) throw RuntimeException("thrown randomized exception")
 }

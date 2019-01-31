@@ -2,7 +2,7 @@ wrk.method = "POST"
 wrk.body = [[{
         "type": "DOWNPAYMENT",
         "country": "BE",
-        "outletId": 1234,
+        "outletId": 1000,
         "amount": "1300.99",
         "currency": "EUR",
         "affiliate": {

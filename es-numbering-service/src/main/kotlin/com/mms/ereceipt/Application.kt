@@ -176,5 +176,5 @@ class NumberRangeTransformer : ValueTransformer<InvoicePreparedEvent, InvoiceCre
 
 
 fun randomizedThrow() {
-    if (Random().nextInt(50) == 7) throw RuntimeException("thrown randomized exception")
+    //if (Random().nextInt(50) == 7) throw RuntimeException("thrown randomized exception")
 }
