@@ -139,15 +139,11 @@ class NumberRangeTransformer : ValueTransformer<InvoicePreparedEvent, InvoiceCre
         val outletId = event!!.outletId
         val country = event.country
 
-        randomizedThrow()
-
         // get current counter event
         val numberRange = this.numberRangeStore!!.get(outletId) ?: NumberRange(country, outletId)
 
         val incremented = numberRange.inc()
-
-        randomizedThrow()
-
+        
         this.numberRangeStore!!.put(outletId, incremented)
 
         randomizedThrow()
@@ -176,5 +172,5 @@ class NumberRangeTransformer : ValueTransformer<InvoicePreparedEvent, InvoiceCre
 
 
 fun randomizedThrow() {
-    //if (Random().nextInt(50) == 7) throw RuntimeException("thrown randomized exception")
+    if (Random().nextInt(10000) == 44) throw RuntimeException("thrown randomized exception")
 }
