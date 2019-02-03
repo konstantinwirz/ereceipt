@@ -38,17 +38,17 @@ object Application {
         val streamBuilder = StreamsBuilder()
 
         streamBuilder
-            .stream<String, InvoiceCreatedEvent>(inputTopic, Consumed.with(Serdes.String(), inputEventSerde))
-            .foreach { country, event ->
-                LOG.info("received: {}", event)
+            .stream<Int, InvoiceCreatedEvent>(inputTopic, Consumed.with(Serdes.IntegerSerde(), inputEventSerde))
+            .foreach { _, event ->
+                LOG.info(event.toString())
             }
 
 
         val props = Properties()
         props[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
-        //props[AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
         props[StreamsConfig.APPLICATION_ID_CONFIG] = applicationId
         props[ConsumerConfig.GROUP_ID_CONFIG] = groupId
+        props[StreamsConfig.PROCESSING_GUARANTEE_CONFIG] = StreamsConfig.EXACTLY_ONCE
 
         val topology = streamBuilder.build()
         val streams = KafkaStreams(topology, props)

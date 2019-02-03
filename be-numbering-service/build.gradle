@@ -24,7 +24,13 @@ apply plugin: "com.github.johnrengelman.shadow"
 
 group 'com.mms.ereceipt'
 version '1.0-SNAPSHOT'
-mainClassName = "com.mms.ereceipt.Application"
+mainClassName = 'com.mms.ereceipt.Application'
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
 
 repositories {
     mavenCentral()
